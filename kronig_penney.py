@@ -61,11 +61,10 @@ if __name__ == '__main__':
             else:
                 arr.append(Psi1(_x).real)
 
-        return arr \
- \
-                def PsiImag(_x):
+        return arr
 
-            arr = []
+    def PsiImag(_x):
+        arr = []
         for _x in x:
             if _x % (b + a) <= 1:
                 arr.append(Psi2(_x).imag)
