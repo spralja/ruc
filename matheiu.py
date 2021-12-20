@@ -164,10 +164,10 @@ if __name__ == '__main__':
   oddPsi = getOddPsi(oddCoefficients)
 
   a = np.pi / n
-  x = np.linspace(-4*a, 4*a, 100)
+  x = np.linspace(-4*a, 4*a, 1000)
 
-  phi = np.arctan(Re_c / Im_c)
-  xPrime = getX_Prime(x, n, phi)
+  phi = np.arctan( Im_c / Re_c )
+  xPrime = getX_Prime(x, n, -phi)
 
   potentialEnergy = getPotentialFunction(Re_c, Im_c, phi, n);
 
@@ -180,10 +180,10 @@ if __name__ == '__main__':
   modEvenCoefficients = []
 
   for coef in evenCoefficients:
-    modEvenCoefficients.append(coef * np.sqrt(H))
+    modEvenCoefficients.append(coef / np.sqrt(H))
 
   newEvenPsi = getEvenPsi(modEvenCoefficients)
-  newComposite = lambda x: (newEvenPsi(getX_Prime(x, n, phi))/ np.sqrt(H)) ** 2
+  newComposite = lambda x: (newEvenPsi(getX_Prime(x, n, phi))) ** 2
   print(quad(newComposite, -4*a, 4*a))
 
   plt.title("Graph of Psi Obtained by the Mathieu Equation")
