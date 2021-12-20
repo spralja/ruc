@@ -1,16 +1,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.constants import Planck, electron_mass
 
 if __name__ == '__main__':
     # Physical constants
-    h = 1
+    h = Planck
     h_bar = h / (2 * np.pi)
-    m = 1  # Mass of electron
+    m = Planck ** 2 # Mass of electron
 
     # Constants in the problem
-    a = 1
-    b = 9
-    U_0 = 1  # idk
+    a = np.pi / 7
+    b = np.pi / 7
+    U_0 = 2.8  # idk
 
     # Chosen values for N
     n1 = 3
@@ -19,10 +20,12 @@ if __name__ == '__main__':
     # Calculated constents
     k = (n1 * np.pi) / (a + b)
 
-    A = (n2 * np.pi) / a
-    print("A = ", A)
-    B = np.sqrt(complex(((n2 ** 2) * (h ** 2)) - (8 * m * (a ** 2) * U_0), 0)) / (2 * h_bar * a)
+    B = (n2 * np.pi) / b
     print("B = ", B)
+
+    A = np.sqrt(complex(((n2 ** 2) * (h ** 2)) + (8 * m * (b ** 2) * U_0), 0)) / (2 * h_bar * b)
+    print("A = ", A)
+
 
     # Greek constants
     Beta_2 = 1  # Input
@@ -45,39 +48,63 @@ if __name__ == '__main__':
 
     # 2 * Beta_2 * ( (( (-2 * B * (np.e**(-1j*A*a))) / A ) + ((np.e**(1j * k * (a + b))) * 2 * ((1j * np.sin(B * b)) + (B * np.cos(B * b) / A)))) / ( ((1 + (B / A)) * (np.e ** (1j * A * a))) + ( (1 - (B / A))  * (np.e ** (-1j * A * a)) ) - (2 * ((np.e ** (1j * k * (a+b))) * (np.e ** (-1j * B * b))) ) ) )
 
-    def Psi1(x):
-        return (Alpha_1 * (np.e ** (1j * A * x))) + (Beta_1 * (np.e ** (-1j * A * x)))
+    def Psi1(_x):
+        return (Alpha_1 * (np.e ** (1j * A * _x))) + (Beta_1 * (np.e ** (-1j * A * _x)))
 
 
-    def Psi2(x):
-        return (Alpha_2 * (np.e ** (1j * B * x))) + (Beta_2 * (np.e ** (-1j * B * x)))
+    def Psi2(_x):
+        return (Alpha_2 * (np.e ** (1j * B * _x))) + (Beta_2 * (np.e ** (-1j * B * _x)))
 
 
     def PsiReal(_x):
-        arr = []
-        for _x in x:
-            if _x % (b + a) <= 1:
-                arr.append(Psi2(_x).real)
+            if _x % (b + a) <= a:
+                return Psi1(_x).real
             else:
-                arr.append(Psi1(_x).real)
+                return Psi2(_x).real
 
-        return arr
 
     def PsiImag(_x):
-        arr = []
-        for _x in x:
-            if _x % (b + a) <= 1:
-                arr.append(Psi2(_x).imag)
+            if (_x ) % (b + a) <= a:
+                return Psi1(_x).imag
             else:
-                arr.append(Psi1(_x).imag)
+                return Psi2(_x).imag
 
-        return arr
+    N = 10000
+    aa = 0
+    bb = 2 * np.pi / 7
 
+    x = np.linspace(aa, bb, N)
 
-    x = np.linspace(0, 10, 1000)
-    yReal = PsiReal(x)
-    yImag = PsiImag(x)
-    plt.plot(x, yReal, x, yImag)
+    yReal = [PsiReal(_x) for _x in x]
+    yImag = [PsiImag(_x) for _x in x]
+
+    _sum = 0
+    for y in yReal:
+        _sum += y ** 2
+        print(_sum)
+
+    for y in yImag:
+        _sum += y ** 2
+        print(_sum)
+
+    _sum *= (bb - aa) / N
+    print(_sum)
+
+    yRealHat = [y / np.sqrt(_sum) for y in yReal]
+    yImagHat = [y / np.sqrt(_sum) for y in yImag]
+
+    _sum = 0
+    for y in yRealHat:
+        _sum += y ** 2
+
+    for y in yImagHat:
+        _sum += y ** 2
+
+    _sum *= (bb - aa) / N
+    print(_sum)
+    plt.plot(x, yRealHat, x, yImagHat)
     plt.legend(["real", "imag"])
     plt.show()
 
+    print(Psi1(0.9))
+    print(Psi2(0.9))
